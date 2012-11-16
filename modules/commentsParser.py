@@ -66,7 +66,7 @@ class CommentsParser():
                 'row'      : row,
                 'col'      : col,
                 'paramName': paramName,
-                'line'     : itterLine
+                'line'     : itterLine.replace('$', '\$').replace('{', '\{').replace('}', '\}')
                 })
 
         currentPoint = mem.cursorPoint

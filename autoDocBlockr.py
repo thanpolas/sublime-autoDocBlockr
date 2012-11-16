@@ -7,11 +7,17 @@ https://github.com/thanpolas/sublime-autoDocBlockr
 import sublime
 import sublime_plugin
 
+# plat_lib_path = os.path.join(sublime.packages_path(), 'modules')
+# m_info = imp.find_module('commentsParser', [plat_lib_path])
+# m = imp.load_module('modules', *m_info)
 
-import commentsParser as com
-import commentsUpdate as upd
-import commentsWrite as wrt
-import sublimeHelper
+
+#from modules.commentsParser import *
+# import modules
+import modules.commentsParser
+import modules.commentsUpdate
+import modules.commentsWrite
+import modules.sublimeHelper
 
 #import globalClass
 
@@ -21,6 +27,11 @@ try:
     hasJsDocs = True
 except:
     hasJsDocs = False
+
+
+
+
+
 
 class Mem:
     def reset(self):
@@ -64,26 +75,26 @@ class AutoDocBlockr(sublime_plugin.TextCommand):
     comParser = None
 
     def run(self, edit, trigger):
+        global wrt
         if not hasJsDocs:
             errMsg = "DocBlockr package is required. "
             errMsg += "Get it from: https://github.com/spadgos/sublime-jsdocs"
             print errMsg
             return
 
-
         if not self.initialize(edit, self.view):
             self.defaultAction(trigger)
             return
         newDocBlock = mem.comUpdate.updateComments()
-
         mem.comWrite.writeComments(newDocBlock)
 
         self.defaultAction(trigger)
 
     def defaultAction(self, trigger):
+        # position the cursor back to original position
+        mem.subHelp.positionCursor(mem.currentFnRow, mem.cursorCol)
+
         if 'enter' == trigger:
-            # position the cursor back to original position
-            mem.subHelp.positionCursor(mem.currentFnRow, mem.cursorCol)
             mem.subHelp.insertNewLine(True)
         elif 'down' == trigger:
             mem.subHelp.positionCursor(mem.currentFnRow + 1, mem.cursorCol)
@@ -119,7 +130,7 @@ class AutoDocBlockr(sublime_plugin.TextCommand):
 
         mem.parser.inline = False
 
-        mem.subHelp = sublimeHelper.SublimeHelper(mem)
+        mem.subHelp = modules.sublimeHelper.SublimeHelper(mem)
         # Get basic orianation
         mem.cursorCol = mem.subHelp.getCol()
         mem.currentFnRow = mem.subHelp.getRow()
@@ -159,12 +170,14 @@ class AutoDocBlockr(sublime_plugin.TextCommand):
             mem.listArgs.append(v[1])
 
         # Initialize the classes we'll use
-        mem.comParser = com.CommentsParser(mem)
-        mem.comUpdate = upd.CommentsUpdate(mem)
-        mem.comWrite = wrt.CommentsWrite(mem)
+        reload(modules.commentsParser)
+        reload(modules.commentsUpdate)
+        reload(modules.commentsWrite)
+        reload(modules.sublimeHelper)
 
-
-
+        mem.comParser = modules.commentsParser.CommentsParser(mem)
+        mem.comUpdate = modules.commentsUpdate.CommentsUpdate(mem)
+        mem.comWrite = modules.commentsWrite.CommentsWrite(mem)
 
         # Get the indentation of the current line
         mem.indent = mem.subHelp.getIndendation()

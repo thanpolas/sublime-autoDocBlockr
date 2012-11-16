@@ -14,7 +14,6 @@ class CommentsWrite():
 
 
     def writeComments(self, newDocBlock):
-
         self.removeOldDocBlocks(self.gc.matches)
 
         self.insertNewDocBlocks(newDocBlock, self.gc.matches, self.gc.indent)
@@ -29,14 +28,12 @@ class CommentsWrite():
 
         if newDocBlock:
             self.subHelp.insertNewLine()
-        #self.view.insert(self.edit, target, newDocBlock)
 
         indentedDocBlock = self.indentDocBlock(newDocBlock, indent)
 
         self.subHelp.insertSnippet(indentedDocBlock)
 
         self.gc.currentFnRow += indentedDocBlock.count("\n") + 1
-        #self.subHelp.insertNewLine()
 
     def removeOldDocBlocks(self, matches):
         """Delete all lines containing docBlocs and insert new
