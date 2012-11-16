@@ -1,0 +1,31 @@
+[
+  // Trigger autoDocBlock on ENTER
+  {
+    "keys": ["enter"],
+    "command": "auto_doc_blockr",
+    "args": {"trigger": "enter"},
+    "context": [
+      { "key": "setting.auto_indent",   "operator": "equal",          "operand": true,                    "match_all": true },
+      { "key": "selection_empty",       "operator": "equal",          "operand": true,                    "match_all": true },
+      { "key": "auto_complete_visible", "operator": "equal",          "operand": false,                   "match_all": true }
+    ]
+  }
+  // {
+  //   "keys": ["down"],
+  //   "command": "auto_doc_blockr",
+  //   "args": {"trigger": "down"},
+  //   "context": [
+  //     { "key": "setting.auto_indent",   "operator": "equal",          "operand": true,                    "match_all": true },
+  //     { "key": "selection_empty",       "operator": "equal",          "operand": true,                    "match_all": true },
+  //     { "key": "auto_complete_visible", "operator": "equal",          "operand": false,                   "match_all": true }
+  //   ]
+  // }
+  // Trigger autoDocBlock on enter
+  // { "keys": ["keypad_enter"], "command": "autoDocBlockr",
+  //   "context": [
+  //     { "key": "setting.auto_indent",   "operator": "equal",          "operand": true,                    "match_all": true },
+  //     { "key": "selection_empty",       "operator": "equal",          "operand": true,                    "match_all": true },
+  //     { "key": "auto_complete_visible", "operator": "equal",          "operand": false,                   "match_all": true }
+  //   ]
+  // }
+]
