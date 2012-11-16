@@ -1,4 +1,8 @@
 {
-  // enable Automatic Document Block insertion
-  "autoDocBlockr": true
+    // enable Automatic Document Block insertion
+    "autoDocBlockr": true,
+    // Langs autoDocBlocr supports
+    "autoDocBlockr_syntax_map": ["JavaScript"]
+
+
 }

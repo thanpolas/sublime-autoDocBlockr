@@ -3,35 +3,25 @@ autoDocBlockr v0.1.0
 by Thanasis Polychronakis
 https://github.com/thanpolas/sublime-autoDocBlockr
 """
+import sys
 
 import sublime
 import sublime_plugin
 
-# plat_lib_path = os.path.join(sublime.packages_path(), 'modules')
-# m_info = imp.find_module('commentsParser', [plat_lib_path])
-# m = imp.load_module('modules', *m_info)
-
-
-#from modules.commentsParser import *
 # import modules
+import modules.eventHandler
+import modules.initialize
 import modules.commentsParser
 import modules.commentsUpdate
 import modules.commentsWrite
 import modules.sublimeHelper
 
-#import globalClass
-
-# Check if jsdocs exists and load it
-try:
-    import jsdocs
-    hasJsDocs = True
-except:
-    hasJsDocs = False
-
-
-
-
-
+reload(modules.eventHandler)
+reload(modules.initialize)
+reload(modules.commentsParser)
+reload(modules.commentsUpdate)
+reload(modules.commentsWrite)
+reload(modules.sublimeHelper)
 
 class Mem:
     def reset(self):
@@ -68,130 +58,92 @@ class Mem:
         # A dict describing the current docBlock coordinates
         self.docBlockCoords=None
 
+
 mem = Mem()
 
+
+# Check if jsdocs exists and load it
+try:
+    import jsdocs
+except:
+    errMsg = "To run autoDocBlockr the DocBlockr package is required. "
+    errMsg += "Get it from: https://github.com/spadgos/sublime-jsdocs"
+    sublime.error_message(errMsg)
+    #sys.exit()
+
+def last_selected_lineno(view):
+    viewSel = view.sel()
+    if not viewSel:
+        return None
+    return view.rowcol(viewSel[0].end())[0]
+
+class BackgroundAutoDoc(sublime_plugin.EventListener):
+    '''TBD
+    '''
+
+    def __init__(self):
+        super(BackgroundAutoDoc, self).__init__()
+        self.lastSelectedLineNo = -1
+
+    def on_selection_modified(self, view):
+        if view.is_scratch():
+            return
+
+        if not view.settings().get('autoDocBlockr'):
+            return False
+
+        lastSelectedLineNo = last_selected_lineno(view)
+
+        if not modules.eventHandler.checkSyntax(view):
+            return
+
+        if lastSelectedLineNo != self.lastSelectedLineNo:
+            self.lastSelectedLineNo = lastSelectedLineNo
+            #start_autoDocBlock(view, 'event')
+
+
+
+
+######################
+
 class AutoDocBlockr(sublime_plugin.TextCommand):
-    # will contain the comments_parser instance
-    comParser = None
 
     def run(self, edit, trigger):
-        global wrt
-        if not hasJsDocs:
-            errMsg = "DocBlockr package is required. "
-            errMsg += "Get it from: https://github.com/spadgos/sublime-jsdocs"
-            print errMsg
-            return
+        start_autoDocBlock(self.view, trigger)
 
-        if not self.initialize(edit, self.view):
-            self.defaultAction(trigger)
-            return
-        newDocBlock = mem.comUpdate.updateComments()
-        mem.comWrite.writeComments(newDocBlock)
-
-        self.defaultAction(trigger)
-
-    def defaultAction(self, trigger):
-        # position the cursor back to original position
-        mem.subHelp.positionCursor(mem.currentFnRow, mem.cursorCol)
-
-        if 'enter' == trigger:
-            mem.subHelp.insertNewLine(True)
-        elif 'down' == trigger:
-            mem.subHelp.positionCursor(mem.currentFnRow + 1, mem.cursorCol)
-
-    def initDocs(self):
-        (row,col) = self.view.rowcol(self.view.sel()[0].begin())
-
-        # Move the cursor one line up
-        target = self.view.text_point(row - 1, 0)
-        self.view.sel().clear()
-        self.view.sel().add(sublime.Region(target))
-
-        row = mem.subHelp.getRow(mem.cursorPoint)
-        mem.subHelp.positionCursor(row)
-        mem.subHelp.insertNewLine()
-        #self.subHelp.insertNewLine(True)
-        mem.subHelp.writeString("/**")
-        # Create the docblock
-        self.view.run_command("jsdocs")
+#####################
 
 
+def start_autoDocBlock(view, trigger):
+    reload(modules.initialize)
+    if not modules.eventHandler.checkSyntax(view):
+        return
 
-    def initialize(self, edit, view):
-        """Reset and initialize important variables"""
+    mem.reset()
+    mem.view= view
+    mem.edit= view.begin_edit('autoDocBlockr')
+    if not modules.initialize.init(mem, view):
+        defaultAction(trigger)
+        mem.view.end_edit(mem.edit)
+        return
 
-        mem.reset()
 
-        mem.view= view
-        mem.edit= edit
+    newDocBlock = mem.comUpdate.updateComments()
+    mem.comWrite.writeComments(newDocBlock)
 
-        mem.cursorPoint = mem.view.sel()[0].end()
-        mem.parser = jsdocs.getParser(mem.view)
+    defaultAction(trigger)
+    mem.view.end_edit(mem.edit)
 
-        mem.parser.inline = False
+def defaultAction(trigger):
+    # position the cursor back to original position
+    mem.subHelp.positionCursor(mem.currentFnRow, mem.cursorCol)
 
-        mem.subHelp = modules.sublimeHelper.SublimeHelper(mem)
-        # Get basic orianation
-        mem.cursorCol = mem.subHelp.getCol()
-        mem.currentFnRow = mem.subHelp.getRow()
+    if 'enter' == trigger:
+        mem.subHelp.insertNewLine(True)
+    elif 'down' == trigger:
+        mem.subHelp.positionCursor(mem.currentFnRow + 1, mem.cursorCol)
 
-        mem.settings = view.settings()
-        if not mem.settings.get('autoDocBlockr'):
-            return False
 
-        # read the same line
-        mem.currentLine = mem.parser.getDefinition(mem.view, mem.cursorPoint)
-        # Check we are on a function declaration line
-        if mem.currentLine:
-            mem.docBlockOut = mem.parser.parse(mem.currentLine)
-        else:
-            return False
-
-        if not mem.docBlockOut:
-            return False
-
-        # Get the function arguments and parse them
-        mem.funcArgs = mem.parser.parseFunction(mem.currentLine)
-        if not mem.funcArgs:
-            return False
-
-        mem.args = mem.funcArgs[1]
-
-        # tuple: [(None, u'param1'), (None, u'param2')]
-        # Fix for a bug that i need to address in jsdocs.py line
-        # ~354, return an empty array if no args exist
-        if mem.args:
-            mem.parsedArgs = mem.parser.parseArgs(mem.args)
-        else:
-            mem.parsedArgs = []
-
-        mem.listArgs = []
-        for i, v in enumerate(mem.parsedArgs):
-            mem.listArgs.append(v[1])
-
-        # Initialize the classes we'll use
-        reload(modules.commentsParser)
-        reload(modules.commentsUpdate)
-        reload(modules.commentsWrite)
-        reload(modules.sublimeHelper)
-
-        mem.comParser = modules.commentsParser.CommentsParser(mem)
-        mem.comUpdate = modules.commentsUpdate.CommentsUpdate(mem)
-        mem.comWrite = modules.commentsWrite.CommentsWrite(mem)
-
-        # Get the indentation of the current line
-        mem.indent = mem.subHelp.getIndendation()
-
-        # get current docBlock matches
-        mem.matches = mem.comParser.parseComments(mem)
-
-        if None == mem.matches:
-            # no comments found, create
-            self.initDocs()
-            #and exit
-            return False
-
-        return True
 
 
 

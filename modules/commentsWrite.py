@@ -33,7 +33,9 @@ class CommentsWrite():
 
         self.subHelp.insertSnippet(indentedDocBlock)
 
-        self.gc.currentFnRow += indentedDocBlock.count("\n") + 1
+        linesAdded = indentedDocBlock.count("\n")
+        if 0 < linesAdded:
+            self.gc.currentFnRow += linesAdded + 1
 
     def removeOldDocBlocks(self, matches):
         """Delete all lines containing docBlocs and insert new
