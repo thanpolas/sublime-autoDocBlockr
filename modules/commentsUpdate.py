@@ -87,6 +87,10 @@ class CommentsUpdate():
         for i, v in enumerate(self.parsedArgs):
             if argument == v[1]:
                 break
-        return self.snippets[i + 2]
+        return self.removeSnippetTags(self.snippets[i + 2])
+
+    def removeSnippetTags(self, string):
+        """Return a string without snippet tags"""
+        return re.sub(r"(\$\{[\d]+\:)(\[[\w]+\])(\})", r"\2", string)
 
 

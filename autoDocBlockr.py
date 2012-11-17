@@ -23,6 +23,13 @@ reload(modules.commentsUpdate)
 reload(modules.commentsWrite)
 reload(modules.sublimeHelper)
 
+
+CONTEXT_KEYS=[
+    "autodoc.enter",
+    "autodoc.up",
+    "autodoc.down"
+]
+
 class Mem:
     def reset(self):
         # The sublime view object
@@ -59,7 +66,7 @@ class Mem:
         self.docBlockCoords=None
 
 
-mem = Mem()
+#mem = Mem()
 
 
 # Check if jsdocs exists and load it
@@ -85,63 +92,60 @@ class BackgroundAutoDoc(sublime_plugin.EventListener):
         super(BackgroundAutoDoc, self).__init__()
         self.lastSelectedLineNo = -1
 
-    def on_selection_modified(self, view):
-        if view.is_scratch():
-            return
-
-        if not view.settings().get('autoDocBlockr'):
-            return False
-
-        lastSelectedLineNo = last_selected_lineno(view)
-
-        if not modules.eventHandler.checkSyntax(view):
-            return
-
-        if lastSelectedLineNo != self.lastSelectedLineNo:
-            self.lastSelectedLineNo = lastSelectedLineNo
-            #start_autoDocBlock(view, 'event')
-
-
-
+    def on_query_context(self, view, key, operator, operand, match_all):
+        if key in CONTEXT_KEYS:
+            print key
+            print operator
+            print operand
+            print match_all
+            #start_autoDocBlockr(view, "event")
 
 ######################
 
 class AutoDocBlockr(sublime_plugin.TextCommand):
 
     def run(self, edit, trigger):
-        start_autoDocBlock(self.view, trigger)
+        start_autoDocBlockr(self.view, trigger)
+
+class AutoDocBlockrVoid(sublime_plugin.TextCommand):
+    def run(self, edit):
+        print self.view.find(r"/.*/", self.view.sel()[0].end())
+        # do nothing
+        return False
 
 #####################
 
 
-def start_autoDocBlock(view, trigger):
+def start_autoDocBlockr(view, trigger):
+    """Start autoDocBlockr"""
+
     reload(modules.initialize)
+
     if not modules.eventHandler.checkSyntax(view):
         return
 
-    mem.reset()
-    mem.view= view
-    mem.edit= view.begin_edit('autoDocBlockr')
+    mem = Mem()
+    mem.view=view
+    mem.edit=view.begin_edit('autoDocBlockr')
+
     if not modules.initialize.init(mem, view):
         defaultAction(trigger)
         mem.view.end_edit(mem.edit)
         return
 
-
     newDocBlock = mem.comUpdate.updateComments()
+
+    #print mem.docBlockCoords
+
     mem.comWrite.writeComments(newDocBlock)
 
-    defaultAction(trigger)
+    #defaultAction(trigger)
     mem.view.end_edit(mem.edit)
 
 def defaultAction(trigger):
     # position the cursor back to original position
-    mem.subHelp.positionCursor(mem.currentFnRow, mem.cursorCol)
-
-    if 'enter' == trigger:
-        mem.subHelp.insertNewLine(True)
-    elif 'down' == trigger:
-        mem.subHelp.positionCursor(mem.currentFnRow + 1, mem.cursorCol)
+    #mem.subHelp.positionCursor(mem.currentFnRow, mem.cursorCol)
+    return
 
 
 

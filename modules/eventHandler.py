@@ -8,6 +8,7 @@ def syntax_name(view):
     return syntax
 
 def checkSyntax(view, ignore_disabled=False):
+    """Returns boolean, checks if file in supported file syntax"""
     syntax = syntax_name(view)
     lc_syntax = syntax.lower()
     language = None

@@ -1,6 +1,10 @@
 [
-  {
-    "caption": "Scan current line and add Doc Blocks if needed",
-    "command": "auto_doc_blockr"
-  }
+    {
+        "caption": "Scan current line and add Doc Blocks if needed",
+        "command": "auto_doc_blockr"
+    },
+    {
+        "caption": "Bogus to point keypress events to",
+        "command": "auto_doc_blockr_void"
+    }
 ]

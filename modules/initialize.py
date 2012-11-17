@@ -9,8 +9,6 @@ import modules.sublimeHelper
 def init(mem, view):
     """Reset and initialize important variables"""
 
-
-
     mem.cursorPoint = mem.view.sel()[0].end()
     mem.parser = jsdocs.getParser(mem.view)
 

@@ -26,9 +26,13 @@ class SublimeHelper():
         self.view.sel().add(lineSelection)
         return lineSelection
 
-    def removeLine(self, row):
-        lineSelection = self.selectLine(row)
-        self.view.erase(self.edit, lineSelection)
+    def removeLine(self, row, how_many=1):
+        lastLinePoint = startPoint= self.view.text_point(row, 0)
+        if 1 < how_many:
+            lastLinePoint = self.view.text_point(row + how_many - 1, 0)
+        endPoint = self.view.full_line(lastLinePoint).end()
+        lineRegion = sublime.Region(startPoint, endPoint)
+        self.view.erase(self.edit, lineRegion)
 
     def insertSnippet(self, snippet):
         """Insert the snippet at current cursor position"""
@@ -37,6 +41,8 @@ class SublimeHelper():
                 'contents': snippet
             }
         )
+    def insert(self, point, string):
+        self.view.insert(self.edit, point, string)
 
     def insertNewLine(self, leaveCursror=False):
         """Insert a new line at current position and return back"""
@@ -58,13 +64,25 @@ class SublimeHelper():
 
         return self.view.rowcol(usePoint)
 
+    def _getPoint(self, currentPoint=None):
+        return currentPoint if not None else self.getCurrentSelEndPoint()
+
     def getRow(self, cursorPoint=None):
         return self.getRowCol(cursorPoint)[0]
 
     def getCol(self, cursorPoint=None):
         return self.getRowCol(cursorPoint)[1]
 
+    def getRowLastPoint(self, cursorPoint=None, cursorIsRow=False):
+        if cursorIsRow: cursorPoint=self.view.text_point(cursorPoint, 0)
+        return self.view.line(self._getPoint(cursorPoint)).end()
+    def getRowFirstPoint(self, cursorPoint=None, cursorIsRow=False):
+        if cursorIsRow: cursorPoint=self.view.text_point(cursorPoint, 0)
+        return self.view.line(self._getPoint(cursorPoint)).begin()
+
     def getCurrentSelStartPoint(self):
+        # When no selection
+        # self.view.sel() == [(18369, 18369)]
         return self.view.sel()[0].begin()
 
     def getCurrentSelEndPoint(self):

@@ -19,19 +19,24 @@ class CommentsWrite():
         self.insertNewDocBlocks(newDocBlock, self.gc.matches, self.gc.indent)
 
     def insertNewDocBlocks(self, newDocBlock, matches, indent):
+
+        # Find the row insert will happen
         if len(matches):
             rowInsert = matches.pop()['row']
         else:
             rowInsert = self.findInsertRow()
 
-        self.subHelp.positionCursor(rowInsert - 1)
-
-        if newDocBlock:
-            self.subHelp.insertNewLine()
+        # self.subHelp.positionCursor(rowInsert - 1)
 
         indentedDocBlock = self.indentDocBlock(newDocBlock, indent)
 
-        self.subHelp.insertSnippet(indentedDocBlock)
+        if indentedDocBlock: indentedDocBlock += "\n"
+
+        #print matches
+        #print self.subHelp.getRowFirstPoint(rowInsert - 1, True)
+        #print indentedDocBlock
+        #self.subHelp.insertSnippet(indentedDocBlock)
+        self.subHelp.insert(self.subHelp.getRowFirstPoint(rowInsert - 1, True), indentedDocBlock)
 
         linesAdded = indentedDocBlock.count("\n")
         if 0 < linesAdded:
@@ -40,10 +45,13 @@ class CommentsWrite():
     def removeOldDocBlocks(self, matches):
         """Delete all lines containing docBlocs and insert new
             ones at first line of old docBlocks"""
-        for v in matches:
-            self.subHelp.removeLine(v['row'] - 1)
+        for v in reversed(matches):
+            removeRow = v['row'] - 1
+            removeRowsCount = max(1, v['line'].count("\n"))
+            print "Param:" + v['paramName'] + ' row:' + str(removeRow) + ' rows:' + str(removeRowsCount)
+            self.subHelp.removeLine(removeRow, removeRowsCount)
             # Substract from the current fn pos as lines above it are removed
-            self.gc.currentFnRow -= 1
+            #self.gc.currentFnRow -= 1
 
 
     def indentDocBlock(self, docBlock, indent):
@@ -57,9 +65,8 @@ class CommentsWrite():
         """Return the row to start inserting the new DocBlock"""
 
         docBlockCoords = self.gc.docBlockCoords
-
-        if docBlockCoords['lastAtFound']:
-            return docBlockCoords['lastAtFound']
+        if docBlockCoords['fistDocRow']:
+            return docBlockCoords['fistDocRow']
 
 
         # Check for same line cases (inline)
