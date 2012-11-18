@@ -21,12 +21,7 @@ class CommentsWrite():
     def insertNewDocBlocks(self, newDocBlock, matches, indent):
 
         # Find the row insert will happen
-        if len(matches):
-            rowInsert = matches.pop()['row']
-        else:
-            rowInsert = self.findInsertRow()
-
-        # self.subHelp.positionCursor(rowInsert - 1)
+        rowInsert = self.findInsertRow()
 
         indentedDocBlock = self.indentDocBlock(newDocBlock, indent)
 
@@ -48,10 +43,7 @@ class CommentsWrite():
         for v in reversed(matches):
             removeRow = v['row'] - 1
             removeRowsCount = max(1, v['line'].count("\n"))
-            print "Param:" + v['paramName'] + ' row:' + str(removeRow) + ' rows:' + str(removeRowsCount)
             self.subHelp.removeLine(removeRow, removeRowsCount)
-            # Substract from the current fn pos as lines above it are removed
-            #self.gc.currentFnRow -= 1
 
 
     def indentDocBlock(self, docBlock, indent):
@@ -63,6 +55,10 @@ class CommentsWrite():
 
     def findInsertRow(self):
         """Return the row to start inserting the new DocBlock"""
+
+        matchesLen = len(self.gc.matches)
+        if matchesLen:
+            return self.gc.matches[0]['row']
 
         docBlockCoords = self.gc.docBlockCoords
         if docBlockCoords['fistDocRow']:

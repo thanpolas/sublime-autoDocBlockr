@@ -37,6 +37,12 @@ class CommentsParser():
         self.view = self.gc.view
         self.edit = self.gc.edit
         self.subhelp = sublimeHelper.SublimeHelper(self.gc)
+        # The regex to match invalidated params
+        invalidPrefix = mem.settings.get('autoDocBlockr_invalid_prefix')
+        reInvalidParam = r"^([\s|\t]*)(\*\s"
+        reInvalidParam += "\\" + invalidPrefix
+        reInvalidParam += r"param\s*)([^\s|\t]+[\s|\t]*)([^\s][\w]+)"
+        self.regInvalidParam = re.compile(reInvalidParam)
 
     def parseComments(self, mem):
         """ Parse comments if no comments found return None """
@@ -98,6 +104,8 @@ class CommentsParser():
 
     def _writeParamBuf(self, itterObj):
         itterObj['foundParam']=False
+        itterObj['seq'] += 1
+
         self.writeMatch(MatchTypes.PARAM, itterObj['currentParamBuf'], itterObj['seq'], itterObj['paramName'])
         itterObj['paramName']=''
         itterObj['currentParamBuf']=[]
@@ -117,7 +125,9 @@ class CommentsParser():
 
 
             # check if there's a doc on this line (@)
-            if self.regAtFound.match(lineDict["line"]):
+            # or an invalidated param (!param)
+            if (self.regAtFound.match(lineDict["line"]) or
+                    self.regInvalidParam.match(lineDict["line"])):
                 if not foundAnyParam:
                     self.docBlockCoords["fistDocRow"]=lineDict["row"]
                     foundAnyParam=True
@@ -129,13 +139,15 @@ class CommentsParser():
             res = self.regParamName.match(lineDict["line"])
 
             if not res:
-                if itterObj['foundParam']: itterObj['currentParamBuf'].append(lineDict)
+                if itterObj['foundParam']:
+                    itterObj['currentParamBuf'].append(lineDict)
                 continue
 
-            # A @param was found, see if there was a buffer open and write to match
+            # A @param was found, see if there was a buffer open
+            # and write param buffer to match array
             if itterObj['foundParam']:
-                itterObj['seq'] += 1
                 self._writeParamBuf(itterObj)
+
             if not isinstance(res.groups(), tuple):
                 self.writeMatch(MatchTypes.BOGUS, [lineDict], itterObj['seq'])
                 continue

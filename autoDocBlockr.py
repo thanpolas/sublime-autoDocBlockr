@@ -88,17 +88,25 @@ class BackgroundAutoDoc(sublime_plugin.EventListener):
     '''TBD
     '''
 
+    triggered=False
+
     def __init__(self):
         super(BackgroundAutoDoc, self).__init__()
         self.lastSelectedLineNo = -1
 
     def on_query_context(self, view, key, operator, operand, match_all):
         if key in CONTEXT_KEYS:
-            print key
-            print operator
-            print operand
-            print match_all
-            #start_autoDocBlockr(view, "event")
+            # A lame workaround for throttling events
+            # up and down events gets triggered twice
+            #print key + "::" + str(self.triggered)
+            if not self.triggered:
+                self.triggered=True
+                sublime.set_timeout(self.close_trigger, 150)
+                start_autoDocBlockr(view, "event")
+            return False
+
+    def close_trigger(self):
+        self.triggered=False
 
 ######################
 
@@ -119,33 +127,33 @@ class AutoDocBlockrVoid(sublime_plugin.TextCommand):
 def start_autoDocBlockr(view, trigger):
     """Start autoDocBlockr"""
 
-    reload(modules.initialize)
+    mem = Mem()
+    mem.view=view
+    mem.settings = view.settings()
+    if not mem.settings.get('autoDocBlockr'):
+        return False
+
+    try:
+        reload(modules.initialize)
+    except:
+        return
 
     if not modules.eventHandler.checkSyntax(view):
         return
 
-    mem = Mem()
-    mem.view=view
     mem.edit=view.begin_edit('autoDocBlockr')
 
     if not modules.initialize.init(mem, view):
-        defaultAction(trigger)
         mem.view.end_edit(mem.edit)
         return
 
     newDocBlock = mem.comUpdate.updateComments()
 
-    #print mem.docBlockCoords
-
     mem.comWrite.writeComments(newDocBlock)
 
-    #defaultAction(trigger)
     mem.view.end_edit(mem.edit)
 
-def defaultAction(trigger):
-    # position the cursor back to original position
-    #mem.subHelp.positionCursor(mem.currentFnRow, mem.cursorCol)
-    return
+
 
 
 

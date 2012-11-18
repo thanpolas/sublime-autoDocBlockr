@@ -1,6 +1,6 @@
 import sublime
 
-import jsdocs
+import modules.jsdocs as jsdocs
 import modules.commentsParser
 import modules.commentsUpdate
 import modules.commentsWrite
@@ -8,6 +8,8 @@ import modules.sublimeHelper
 
 def init(mem, view):
     """Reset and initialize important variables"""
+
+
 
     mem.cursorPoint = mem.view.sel()[0].end()
     mem.parser = jsdocs.getParser(mem.view)
@@ -20,9 +22,6 @@ def init(mem, view):
     mem.cursorCol = mem.subHelp.getCol(mem.cursorPoint)
     mem.currentFnRow = mem.subHelp.getRow()
 
-    mem.settings = view.settings()
-    if not mem.settings.get('autoDocBlockr'):
-        return False
 
     # read the same line
     mem.currentLine = mem.parser.getDefinition(mem.view, mem.cursorPoint)

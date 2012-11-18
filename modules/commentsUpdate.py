@@ -1,7 +1,7 @@
 import string
 import re
 
-import jsdocs
+import modules.jsdocs as jsdocs
 
 class CommentsUpdate():
     parser=None
@@ -19,7 +19,7 @@ class CommentsUpdate():
         self.sublime = self.gc
         self.view = self.gc.view
         self.jsDocs = jsdocs.JsdocsCommand(self.gc)
-        self.invalidPrefix = '!'
+        self.invalidPrefix = mem.settings.get('autoDocBlockr_invalid_prefix')
 
 
     def updateComments(self):
@@ -34,7 +34,9 @@ class CommentsUpdate():
         self.foundOldDocBlocks = []
 
         self.jsDocs.initialize(self.sublime.view)
+
         snippet = self.jsDocs.generateSnippet(docBlockOut)
+
         self.snippets = string.split(snippet, '\n')
         self.matches = matches
         self.parsedArgs = parsedArgs
@@ -42,6 +44,7 @@ class CommentsUpdate():
         self.renderNewDocs()
 
         self.invalidateNotFoundDocs()
+
         return self.result
 
     def getDocBloc(self):
@@ -58,6 +61,7 @@ class CommentsUpdate():
                 self.result.append(self.getNewDocLine(v[1]).strip())
                 continue
 
+            #print docArg
             # Save the findings
             self.foundOldDocBlocks.append(docArg['seq'])
 
@@ -66,6 +70,7 @@ class CommentsUpdate():
 
     def invalidateNotFoundDocs(self):
         """See if any old docblocks where not found and invalidate them"""
+        #print self.foundOldDocBlocks
         for v in reversed(self.matches):
             if v['seq'] not in self.foundOldDocBlocks:
                 self.result.append(re.sub(r'\@param',
@@ -75,6 +80,7 @@ class CommentsUpdate():
     def findDocArg(self, argument):
         """find a doc block in argument."""
         for v in reversed(self.matches):
+            #print "examining argument:" + argument + " with paramName:" + v['paramName']
             if argument == v['paramName']:
                 return v
         return None
