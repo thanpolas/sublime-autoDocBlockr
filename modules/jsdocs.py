@@ -63,7 +63,10 @@ def getParser(view):
     return JsdocsJavascript(viewSettings)
 
 
-class JsdocsCommand(sublime_plugin.TextCommand):
+class JsdocsCommand():
+
+    def __init__(self, mem):
+        self.view = mem.view
 
     def run(self, edit, inline=False):
 
@@ -862,7 +865,7 @@ class JsdocsObjC(JsdocsParser):
 
 ############################################################33
 
-class JsdocsIndentCommand(sublime_plugin.TextCommand):
+class JsdocsIndentCommand():
 
     def run(self, edit):
         v = self.view
@@ -898,7 +901,7 @@ class JsdocsIndentCommand(sublime_plugin.TextCommand):
         return None
 
 
-class JsdocsJoinCommand(sublime_plugin.TextCommand):
+class JsdocsJoinCommand():
     def run(self, edit):
         v = self.view
         for sel in v.sel():
@@ -906,7 +909,7 @@ class JsdocsJoinCommand(sublime_plugin.TextCommand):
                 v.replace(edit, v.find("[ \\t]*\\n[ \\t]*((?:\\*|//|#)[ \\t]*)?", lineRegion.begin()), ' ')
 
 
-class JsdocsDecorateCommand(sublime_plugin.TextCommand):
+class JsdocsDecorateCommand():
     def run(self, edit):
         v = self.view
         re_whitespace = re.compile("^(\\s*)//")
@@ -931,7 +934,7 @@ class JsdocsDecorateCommand(sublime_plugin.TextCommand):
             v.insert(edit, sel.begin(), "/" * (lineLength + 3) + "\n")
 
 
-class JsdocsDeindent(sublime_plugin.TextCommand):
+class JsdocsDeindent():
     """
     When pressing enter at the end of a docblock, this takes the cursor back one space.
     /**
@@ -946,7 +949,7 @@ class JsdocsDeindent(sublime_plugin.TextCommand):
         v.insert(edit, lineRegion.end(), re.sub("^(\\s*)\\s\\*/.*", "\n\\1", line))
 
 
-class JsdocsReparse(sublime_plugin.TextCommand):
+class JsdocsReparse():
     """
     Reparse a docblock to make the fields 'active' again, so that pressing tab will jump to the next one
     """
@@ -971,7 +974,7 @@ class JsdocsReparse(sublime_plugin.TextCommand):
         write(v, text)
 
 
-class JsdocsTrimAutoWhitespace(sublime_plugin.TextCommand):
+class JsdocsTrimAutoWhitespace():
     """
     Trim the automatic whitespace added when creating a new line in a docblock.
     """
@@ -983,7 +986,7 @@ class JsdocsTrimAutoWhitespace(sublime_plugin.TextCommand):
         v.replace(edit, lineRegion, re.sub("^(\\s*\\*)\\s*$", "\\1\n\\1" + (" " * spaces), line))
 
 
-class JsdocsWrapLines(sublime_plugin.TextCommand):
+class JsdocsWrapLines():
     """
     Reformat description text inside a comment block to wrap at the correct length.
     Wrap column is set by the first ruler (set in Default.sublime-settings), or 80 by default.

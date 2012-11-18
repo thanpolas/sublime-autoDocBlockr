@@ -1,5 +1,9 @@
 [
-  // Trigger autoDocBlock on ENTER
+  //
+  // DO NOT EDIT OR OVERWRITE THESE BINDINGS
+  // They are not actually key bindings, their purpose is to trigger the
+  // custom context defined in each binding.
+  //
   {
     "keys": ["enter"],
     "command": "auto_doc_blockr_void",
@@ -8,6 +12,15 @@
       { "key": "selection_empty",       "operator": "equal",          "operand": true,                    "match_all": true },
       { "key": "auto_complete_visible", "operator": "equal",          "operand": false,                   "match_all": true },
       {"key" : "autodoc.enter", "operator": "equal", "operand": true}
+    ]
+  },
+  {
+    "keys": ["keypad_enter"],
+    "command": "auto_doc_blockr_void",
+    "context": [
+      { "key": "setting.auto_indent",   "operator": "equal",          "operand": true,                    "match_all": true },
+      { "key": "selection_empty",       "operator": "equal",          "operand": true,                    "match_all": true },
+      {"key" : "autodoc.keypad_enter"}
     ]
   },
   {
@@ -29,24 +42,4 @@
       {"key" : "autodoc.down"}
     ]
   }
-
-
-  // {
-  //   "keys": ["down"],
-  //   "command": "auto_doc_blockr",
-  //   "args": {"trigger": "down"},
-  //   "context": [
-  //     { "key": "setting.auto_indent",   "operator": "equal",          "operand": true,                    "match_all": true },
-  //     { "key": "selection_empty",       "operator": "equal",          "operand": true,                    "match_all": true },
-  //     { "key": "auto_complete_visible", "operator": "equal",          "operand": false,                   "match_all": true }
-  //   ]
-  // }
-  // Trigger autoDocBlock on enter
-  // { "keys": ["keypad_enter"], "command": "autoDocBlockr",
-  //   "context": [
-  //     { "key": "setting.auto_indent",   "operator": "equal",          "operand": true,                    "match_all": true },
-  //     { "key": "selection_empty",       "operator": "equal",          "operand": true,                    "match_all": true },
-  //     { "key": "auto_complete_visible", "operator": "equal",          "operand": false,                   "match_all": true }
-  //   ]
-  // }
 ]

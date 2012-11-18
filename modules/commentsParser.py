@@ -3,8 +3,11 @@
 """
 import re
 import string
+import logging
 
 import sublimeHelper
+
+module_logger = logging.getLogger('autoDocBlockr.commentsParser')
 
 def enum(**enums): return type('Enum', (), enums)
 
@@ -31,6 +34,7 @@ class CommentsParser():
     regAtFound = re.compile(r"([\s|\t]*)(\*\s\@\w*\s*)")
 
     def __init__(self, mem):
+        self.log = logging.getLogger('autoDocBlockr.commentsParser.CommentsParser')
         self.gc = mem
         self.parser = self.gc.parser
         self.sublime = self.gc
@@ -43,6 +47,7 @@ class CommentsParser():
         reInvalidParam += "\\" + invalidPrefix
         reInvalidParam += r"param\s*)([^\s|\t]+[\s|\t]*)([^\s][\w]+)"
         self.regInvalidParam = re.compile(reInvalidParam)
+        self.log.info('Intialized')
 
     def parseComments(self, mem):
         """ Parse comments if no comments found return None """

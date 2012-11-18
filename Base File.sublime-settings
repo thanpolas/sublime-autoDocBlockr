@@ -3,10 +3,17 @@
     "autoDocBlockr": true,
     // Langs autoDocBlocr supports
     "autoDocBlockr_syntax_map": ["JavaScript", "PHP"],
+    // Which keypress events to trigger autoDocBlockr on
+    // overwrite this setting and remove any keypresses you don't want
+    "autoDocBlocr_trigger_on":[
+      "autodoc.enter",
+      "autodoc.up",
+      "autodoc.down",
+      "autodoc.keypad_enter"
+    ],
+
     // The char to replace the '@' symbol for bogus docBlock
     // e.g. if a @param docBlock no longer exists in the function
     // arguments
     "autoDocBlockr_invalid_prefix": "!"
-
-
 }

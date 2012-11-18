@@ -1,17 +1,20 @@
 # Automatic Document Block Insertion
 
-autoDocBlockr will do just that for you, insert document blocks on your functions automatically as you scroll by them.
+autoDocBlockr will insert document blocks automatically. Just move over your functions and autoDocBlockr will read if the function has any document blocks, check if they are ok and if not properly modify them.
 
-It is triggered if you press enter on a line with a function declaration, or move with up or down arrows from one.
+It is triggered seemlesly as you move your cursor through a function declaration.
 
 ## Instalation
 
-Still a work in progress, if you want to give it a try just clone this repo in your sublime2 packages folder.
+Go to your sublime packages folder and:
+
+```shell
+clone git@github.com:thanpolas/sublime-autoDocBlockr.git autoDocBlockr
+```
 
 ## Dependencies
 
-This package depends on [docBlockr](https://github.com/spadgos/sublime-jsdocs)
-
+This package depends on [docBlockr](https://github.com/spadgos/sublime-jsdocs), a stripped version is included inside the `autoDocBlockr` package.
 
 ## License
 

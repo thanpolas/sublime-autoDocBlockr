@@ -1,7 +1,10 @@
 import string
 import re
+import logging
 
 import modules.jsdocs as jsdocs
+
+module_logger = logging.getLogger('autoDocBlockr.commentsUpdate')
 
 class CommentsUpdate():
     parser=None
@@ -14,6 +17,7 @@ class CommentsUpdate():
     foundOldDocBlocks=[]
 
     def __init__(self, mem):
+        self.log = logging.getLogger('autoDocBlockr.commentsUpdate.CommentsUpdate')
         self.gc = mem
         self.parser = self.gc.parser
         self.sublime = self.gc
@@ -58,7 +62,9 @@ class CommentsUpdate():
             docArg = self.findDocArg(v[1])
 
             if not docArg:
-                self.result.append(self.getNewDocLine(v[1]).strip())
+                newLine=self.getNewDocLine(v[1]).strip()
+                print "stripped:" + newLine
+                self.result.append(newLine)
                 continue
 
             #print docArg
@@ -93,10 +99,13 @@ class CommentsUpdate():
         for i, v in enumerate(self.parsedArgs):
             if argument == v[1]:
                 break
+        print "raw:" + self.snippets[i+2]
         return self.removeSnippetTags(self.snippets[i + 2])
 
     def removeSnippetTags(self, string):
         """Return a string without snippet tags"""
-        return re.sub(r"(\$\{[\d]+\:)(\[[\w]+\])(\})", r"\2", string)
+        noSnippets = re.sub(r"(\$\{[\d]+\:)(\[[\w]+\])(\})", r"\2", string)
+        noSnippets = re.sub(r'\\(.)', r'\1', noSnippets)
+        return noSnippets
 
 

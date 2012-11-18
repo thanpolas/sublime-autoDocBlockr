@@ -1,9 +1,13 @@
 """
-autoDocBlockr v0.1.0
+autoDocBlockr v0.1.1
 by Thanasis Polychronakis
 https://github.com/thanpolas/sublime-autoDocBlockr
 """
+
+__author__ = 'thanpolas@gmail.com (Thanasis Polychronakis)'
+
 import sys
+import logging
 
 import sublime
 import sublime_plugin
@@ -22,13 +26,23 @@ reload(modules.commentsParser)
 reload(modules.commentsUpdate)
 reload(modules.commentsWrite)
 reload(modules.sublimeHelper)
+reload(modules.jsdocs)
 
 
-CONTEXT_KEYS=[
-    "autodoc.enter",
-    "autodoc.up",
-    "autodoc.down"
-]
+
+
+logger = logging.getLogger('autoDocBlockr')
+# Set to WARNING or DEBUG
+logger.setLevel(logging.DEBUG)
+
+if (0 == len(logger.handlers)):
+    formatter = logging.Formatter('%(asctime)s::%(name)s:%(levelname)s: %(message)s')
+    ch = logging.StreamHandler(sys.stdout)
+    ch.setFormatter(formatter)
+    logger.addHandler(ch)
+
+logger.info("Loading...")
+
 
 class Mem:
     def reset(self):
@@ -92,10 +106,9 @@ class BackgroundAutoDoc(sublime_plugin.EventListener):
 
     def __init__(self):
         super(BackgroundAutoDoc, self).__init__()
-        self.lastSelectedLineNo = -1
 
     def on_query_context(self, view, key, operator, operand, match_all):
-        if key in CONTEXT_KEYS:
+        if key in view.settings().get('autoDocBlocr_trigger_on'):
             # A lame workaround for throttling events
             # up and down events gets triggered twice
             #print key + "::" + str(self.triggered)
