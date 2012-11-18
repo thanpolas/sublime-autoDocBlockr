@@ -71,7 +71,7 @@ class Mem:
 
 # Check if jsdocs exists and load it
 try:
-    import jsdocs
+    import modules.jsdocs as jsdocs
 except:
     errMsg = "To run autoDocBlockr the DocBlockr package is required. "
     errMsg += "Get it from: https://github.com/spadgos/sublime-jsdocs"
@@ -117,7 +117,6 @@ class AutoDocBlockr(sublime_plugin.TextCommand):
 
 class AutoDocBlockrVoid(sublime_plugin.TextCommand):
     def run(self, edit):
-        print self.view.find(r"/.*/", self.view.sel()[0].end())
         # do nothing
         return False
 
@@ -126,17 +125,18 @@ class AutoDocBlockrVoid(sublime_plugin.TextCommand):
 
 def start_autoDocBlockr(view, trigger):
     """Start autoDocBlockr"""
-
     mem = Mem()
     mem.view=view
     mem.settings = view.settings()
     if not mem.settings.get('autoDocBlockr'):
         return False
 
-    try:
-        reload(modules.initialize)
-    except:
-        return
+    # try:
+    #     reload(modules.initialize)
+    # except RuntimeError, ex:
+    #     print "autoDocBlockr Exception on modules.initialize reload"
+    #     print ex
+    #     return
 
     if not modules.eventHandler.checkSyntax(view):
         return

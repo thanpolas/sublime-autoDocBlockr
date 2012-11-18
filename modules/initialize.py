@@ -54,10 +54,10 @@ def init(mem, view):
         mem.listArgs.append(v[1])
 
     # Initialize the classes we'll use
-    reload(modules.commentsParser)
-    reload(modules.commentsUpdate)
-    reload(modules.commentsWrite)
-    reload(modules.sublimeHelper)
+    # reload(modules.commentsParser)
+    # reload(modules.commentsUpdate)
+    # reload(modules.commentsWrite)
+    # reload(modules.sublimeHelper)
 
     mem.comParser = modules.commentsParser.CommentsParser(mem)
     mem.comUpdate = modules.commentsUpdate.CommentsUpdate(mem)
@@ -85,10 +85,6 @@ def initDocs(mem):
     mem.view.sel().clear()
     mem.view.sel().add(sublime.Region(target))
 
-    row = mem.subHelp.getRow(mem.cursorPoint)
-    mem.subHelp.positionCursor(row)
-    mem.subHelp.insertNewLine()
-    #mem.subHelp.insertNewLine(True)
     mem.subHelp.writeString("/**")
     # Create the docblock
     mem.view.run_command("jsdocs")

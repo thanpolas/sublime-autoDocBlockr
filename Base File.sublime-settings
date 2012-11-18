@@ -2,7 +2,7 @@
     // enable Automatic Document Block insertion
     "autoDocBlockr": true,
     // Langs autoDocBlocr supports
-    "autoDocBlockr_syntax_map": ["JavaScript"],
+    "autoDocBlockr_syntax_map": ["JavaScript", "PHP"],
     // The char to replace the '@' symbol for bogus docBlock
     // e.g. if a @param docBlock no longer exists in the function
     // arguments
