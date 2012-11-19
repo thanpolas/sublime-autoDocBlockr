@@ -16,6 +16,10 @@ clone git@github.com:thanpolas/sublime-autoDocBlockr.git autoDocBlockr
 
 This package depends on [docBlockr](https://github.com/spadgos/sublime-jsdocs), a stripped version is included inside the `autoDocBlockr` package.
 
+## Changelog
+- **v0.1.2**, *19 November 2012*
+  - Fixed issue #1, regex problem for fetching params in parser module.
+
 ## License
 
 [MIT License](http://en.wikipedia.org/wiki/MIT_License)

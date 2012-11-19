@@ -29,7 +29,7 @@ class CommentsParser():
     # The regex for the start of the docblock
     regBlockStart = re.compile(r"^\s*(\/\*|###)\*$")
     # the regex to pull the param name
-    regParamName = re.compile(r"^([\s|\t]*)(\*\s\@param\s*)([^\s|\t]+[\s|\t]*)([^\s][\w]+)")
+    regParamName = re.compile(r"^([\s|\t]*)(\*\s\@param\s*)([^\s|\t]+[\w\.\{\}]+)[\s]+([\w]+)")
     # Regex to track lines with any doc bloc (@anything)
     regAtFound = re.compile(r"([\s|\t]*)(\*\s\@\w*\s*)")
 
@@ -47,7 +47,6 @@ class CommentsParser():
         reInvalidParam += "\\" + invalidPrefix
         reInvalidParam += r"param\s*)([^\s|\t]+[\s|\t]*)([^\s][\w]+)"
         self.regInvalidParam = re.compile(reInvalidParam)
-        self.log.info('Intialized')
 
     def parseComments(self, mem):
         """ Parse comments if no comments found return None """
@@ -166,6 +165,7 @@ class CommentsParser():
             itterObj['foundParam']=True
             itterObj['paramName']=str(res.group(4))
             itterObj['currentParamBuf'].append(lineDict)
+            self.log.info('Found param:' + itterObj['paramName'])
 
     def writeMatch(self, matchType, listLineDict, seq, paramName=''):
         """Create the match dict and append it to self.matches"""

@@ -1,5 +1,5 @@
 """
-autoDocBlockr v0.1.1
+autoDocBlockr v0.1.2
 by Thanasis Polychronakis
 https://github.com/thanpolas/sublime-autoDocBlockr
 """
@@ -36,7 +36,7 @@ logger = logging.getLogger('autoDocBlockr')
 logger.setLevel(logging.DEBUG)
 
 if (0 == len(logger.handlers)):
-    formatter = logging.Formatter('%(asctime)s::%(name)s:%(levelname)s: %(message)s')
+    formatter = logging.Formatter('%(asctime)s::%(levelname)s::%(name)s.%(funcName)s():%(lineno)d:: %(message)s')
     ch = logging.StreamHandler(sys.stdout)
     ch.setFormatter(formatter)
     logger.addHandler(ch)
@@ -69,7 +69,7 @@ class Mem:
         self.args=None
         # A list of tuples with the function arguments
         # Each tuple has a guess at the type and the name of the argument.
-        self.parsedArgs=None
+        self.parsedFuncArgs=None
         # A list of the function arguments
         self.listArgs=None
         # The indentation of the current line as a string

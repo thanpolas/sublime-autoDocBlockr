@@ -29,7 +29,7 @@ class CommentsUpdate():
     def updateComments(self):
 
         matches=self.gc.matches
-        parsedArgs=self.gc.parsedArgs
+        parsedFuncArgs=self.gc.parsedFuncArgs
         docBlockOut=self.gc.docBlockOut
 
         # Parse comments through DocBlockr to use in case there
@@ -43,7 +43,7 @@ class CommentsUpdate():
 
         self.snippets = string.split(snippet, '\n')
         self.matches = matches
-        self.parsedArgs = parsedArgs
+        self.parsedFuncArgs = parsedFuncArgs
 
         self.renderNewDocs()
 
@@ -57,13 +57,13 @@ class CommentsUpdate():
 
     def renderNewDocs(self):
         # Go for each argument found
-        for i, v in enumerate(self.parsedArgs):
+        for i, v in enumerate(self.parsedFuncArgs):
             # Get the doc block if there's one
             docArg = self.findDocArg(v[1])
 
             if not docArg:
                 newLine=self.getNewDocLine(v[1]).strip()
-                print "stripped:" + newLine
+                self.log.info("stripped docBlock:" + newLine)
                 self.result.append(newLine)
                 continue
 
@@ -96,10 +96,10 @@ class CommentsUpdate():
 
         #first locate the position of the argument
 
-        for i, v in enumerate(self.parsedArgs):
+        for i, v in enumerate(self.parsedFuncArgs):
             if argument == v[1]:
                 break
-        print "raw:" + self.snippets[i+2]
+        self.log.info("raw docBlock:" + self.snippets[i+2])
         return self.removeSnippetTags(self.snippets[i + 2])
 
     def removeSnippetTags(self, string):

@@ -45,12 +45,12 @@ def init(mem, view):
     # Fix for a bug that i need to address in jsdocs.py line
     # ~354, return an empty array if no args exist
     if mem.args:
-        mem.parsedArgs = mem.parser.parseArgs(mem.args)
+        mem.parsedFuncArgs = mem.parser.parseArgs(mem.args)
     else:
-        mem.parsedArgs = []
+        mem.parsedFuncArgs = []
 
     mem.listArgs = []
-    for i, v in enumerate(mem.parsedArgs):
+    for i, v in enumerate(mem.parsedFuncArgs):
         mem.listArgs.append(v[1])
 
     # Initialize the classes we'll use

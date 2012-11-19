@@ -1,10 +1,15 @@
 import string
+import logging
 
 import sublimeHelper
+
+module_logger = logging.getLogger('autoDocBlockr.commentsWrite')
+
 
 class CommentsWrite():
 
     def __init__(self, mem):
+        self.log = logging.getLogger('autoDocBlockr.commentsWrite.CommentsWrite')
         self.gc = mem
         self.parser = self.gc.parser
         self.sublime = self.gc
@@ -14,17 +19,16 @@ class CommentsWrite():
 
 
     def writeComments(self, newDocBlock):
+
         self.removeOldDocBlocks(self.gc.matches)
 
         self.insertNewDocBlocks(newDocBlock, self.gc.matches, self.gc.indent)
 
     def insertNewDocBlocks(self, newDocBlock, matches, indent):
-
         # Find the row insert will happen
         rowInsert = self.findInsertRow()
 
         indentedDocBlock = self.indentDocBlock(newDocBlock, indent)
-
         if indentedDocBlock: indentedDocBlock += "\n"
 
         self.subHelp.insert(self.subHelp.getRowFirstPoint(rowInsert - 1, True), indentedDocBlock)
