@@ -6,5 +6,9 @@
     {
         "caption": "Bogus to point keypress events to",
         "command": "auto_doc_blockr_void"
+    },
+    {
+        "caption": "Tests for autoDocBlockr",
+        "command": "auto_doc_blockr_test"
     }
 ]

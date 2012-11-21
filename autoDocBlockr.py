@@ -1,5 +1,5 @@
 """
-autoDocBlockr v0.1.2
+autoDocBlockr v0.1.3
 by Thanasis Polychronakis
 https://github.com/thanpolas/sublime-autoDocBlockr
 """

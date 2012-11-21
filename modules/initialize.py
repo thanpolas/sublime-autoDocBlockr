@@ -5,11 +5,11 @@ import modules.commentsParser
 import modules.commentsUpdate
 import modules.commentsWrite
 import modules.sublimeHelper
+import modules.eventHandler
+import modules.jsParser
 
 def init(mem, view):
     """Reset and initialize important variables"""
-
-
 
     mem.cursorPoint = mem.view.sel()[0].end()
     mem.parser = jsdocs.getParser(mem.view)
@@ -25,11 +25,16 @@ def init(mem, view):
 
     # read the same line
     mem.currentLine = mem.parser.getDefinition(mem.view, mem.cursorPoint)
+
     # Check we are on a function declaration line
-    if mem.currentLine:
-        mem.docBlockOut = mem.parser.parse(mem.currentLine)
-    else:
+    if not mem.currentLine:
         return False
+
+    mem.docBlockOut = mem.parser.parse(mem.currentLine)
+    if "javascript" == modules.eventHandler.syntax_name(mem.view).lower():
+        # Check if function is proper to add docBlockr
+        if not modules.jsParser.properFunc(mem.currentLine):
+            return False
 
     if not mem.docBlockOut:
         return False
