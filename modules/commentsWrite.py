@@ -36,9 +36,13 @@ class CommentsWrite():
     def removeOldDocBlocks(self, matches):
         """Delete all lines containing docBlocs and insert new
             ones at first line of old docBlocks"""
+
         for v in reversed(matches):
             removeRow = v['row'] - 1
-            removeRowsCount = max(1, v['line'].count("\n"))
+            removeRowsCount = max(1, v['line'].count("\n") + 1)
+
+            #self.log.info('Removing param:' + v['paramName'] + ' rowsCount:' + str(removeRowsCount))
+
             self.subHelp.removeLine(removeRow, removeRowsCount)
 
 

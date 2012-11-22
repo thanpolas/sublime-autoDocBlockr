@@ -1,3 +1,5 @@
+import logging
+
 import sublime
 
 import modules.jsdocs as jsdocs
@@ -8,10 +10,13 @@ import modules.sublimeHelper
 import modules.eventHandler
 import modules.jsParser
 
+module_logger = logging.getLogger('autoDocBlockr.initialize')
+
 def init(mem, view):
     """Reset and initialize important variables"""
 
     mem.cursorPoint = mem.view.sel()[0].end()
+    mem.lineStartPoint = view.line(mem.cursorPoint).begin()
     mem.parser = jsdocs.getParser(mem.view)
 
     mem.parser.inline = False
@@ -22,15 +27,15 @@ def init(mem, view):
     mem.cursorCol = mem.subHelp.getCol(mem.cursorPoint)
     mem.currentFnRow = mem.subHelp.getRow()
 
-
-    # read the same line
-    mem.currentLine = mem.parser.getDefinition(mem.view, mem.cursorPoint)
+    # read the same line. Use line start point or jsdocs parser gets crazy
+    mem.currentLine = mem.parser.getDefinition(mem.view, mem.lineStartPoint)
 
     # Check we are on a function declaration line
     if not mem.currentLine:
         return False
 
     mem.docBlockOut = mem.parser.parse(mem.currentLine)
+
     if "javascript" == modules.eventHandler.syntax_name(mem.view).lower():
         # Check if function is proper to add docBlockr
         if not modules.jsParser.properFunc(mem.currentLine):
@@ -43,7 +48,6 @@ def init(mem, view):
     mem.funcArgs = mem.parser.parseFunction(mem.currentLine)
     if not mem.funcArgs:
         return False
-
     mem.args = mem.funcArgs[1]
 
     # tuple: [(None, u'param1'), (None, u'param2')]
@@ -57,12 +61,6 @@ def init(mem, view):
     mem.listArgs = []
     for i, v in enumerate(mem.parsedFuncArgs):
         mem.listArgs.append(v[1])
-
-    # Initialize the classes we'll use
-    # reload(modules.commentsParser)
-    # reload(modules.commentsUpdate)
-    # reload(modules.commentsWrite)
-    # reload(modules.sublimeHelper)
 
     mem.comParser = modules.commentsParser.CommentsParser(mem)
     mem.comUpdate = modules.commentsUpdate.CommentsUpdate(mem)
@@ -80,6 +78,7 @@ def init(mem, view):
         #and exit
         return False
 
+    module_logger.info('Passed initialization. row:' + str(mem.currentFnRow) + ' col:' + str(mem.cursorCol))
     return True
 
 def initDocs(mem):

@@ -165,7 +165,7 @@ class CommentsParser():
             itterObj['foundParam']=True
             itterObj['paramName']=str(res.group(4))
             itterObj['currentParamBuf'].append(lineDict)
-            self.log.info('Found param:' + itterObj['paramName'])
+
 
     def writeMatch(self, matchType, listLineDict, seq, paramName=''):
         """Create the match dict and append it to self.matches"""
@@ -174,11 +174,12 @@ class CommentsParser():
         row=self.subhelp.getRow(currentPoint)
         line=string.join([v["line"] for v in listLineDict], "\n")
 
+        #self.log.info('Found param match:' + paramName)
 
         self.matches.append({
             'seq'      : seq,
             'matchType': matchType,
             'row'      : row,
             'paramName': paramName,
-            'line'     : line #.replace('$', '\$').replace('{', '\{').replace('}', '\}')
+            'line'     : line
             })

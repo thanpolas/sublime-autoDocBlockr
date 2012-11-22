@@ -29,8 +29,8 @@ class CommentsUpdate():
     def updateComments(self):
 
         matches=self.gc.matches
-        parsedFuncArgs=self.gc.parsedFuncArgs
         docBlockOut=self.gc.docBlockOut
+        self.parsedFuncArgs = self.gc.parsedFuncArgs
 
         # Parse comments through DocBlockr to use in case there
         # are missing doc blocks
@@ -38,12 +38,10 @@ class CommentsUpdate():
         self.foundOldDocBlocks = []
 
         self.jsDocs.initialize(self.sublime.view)
-
         snippet = self.jsDocs.generateSnippet(docBlockOut)
 
         self.snippets = string.split(snippet, '\n')
         self.matches = matches
-        self.parsedFuncArgs = parsedFuncArgs
 
         self.renderNewDocs()
 
@@ -63,11 +61,10 @@ class CommentsUpdate():
 
             if not docArg:
                 newLine=self.getNewDocLine(v[1]).strip()
-                self.log.info("stripped docBlock:" + newLine)
+                #self.log.info("stripped docBlock:" + newLine)
                 self.result.append(newLine)
                 continue
 
-            #print docArg
             # Save the findings
             self.foundOldDocBlocks.append(docArg['seq'])
 
@@ -99,7 +96,7 @@ class CommentsUpdate():
         for i, v in enumerate(self.parsedFuncArgs):
             if argument == v[1]:
                 break
-        self.log.info("raw docBlock:" + self.snippets[i+2])
+        #self.log.info("raw docBlock:" + self.snippets[i+2])
         return self.removeSnippetTags(self.snippets[i + 2])
 
     def removeSnippetTags(self, string):
