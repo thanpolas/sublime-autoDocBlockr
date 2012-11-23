@@ -29,7 +29,7 @@ class CommentsParser():
     # The regex for the start of the docblock
     regBlockStart = re.compile(r"^\s*(\/\*|###)\*$")
     # the regex to pull the param name
-    regParamName = re.compile(r"^([\s|\t]*)(\*\s\@param\s*)([^\s|\t]+[\w\.\{\}]+)[\s]+([\w]+)")
+    regParamName = re.compile(r"^([\s|\t]*)(\*\s\@param\s*)([^\s|\t]+[\w\.\{\}\|\<\>\:\,]+)[\s]+([\w]+)")
     # Regex to track lines with any doc bloc (@anything)
     regAtFound = re.compile(r"([\s|\t]*)(\*\s\@\w*\s*)")
 
@@ -74,7 +74,7 @@ class CommentsParser():
         allLines = self._read_docBlock()
         if len(allLines):
             self.docBlockCoords['docBlockEnd']=allLines[len(allLines) - 1]['row']
-        #print string.join(allLines, "\n")
+        #print allLines
         self._parse_dockBlock(allLines)
 
 
@@ -133,7 +133,7 @@ class CommentsParser():
             if (self.regAtFound.match(lineDict["line"]) or
                     self.regInvalidParam.match(lineDict["line"])):
                 if not foundAnyParam:
-                    self.docBlockCoords["fistDocRow"]=lineDict["row"]
+                    self.docBlockCoords["firstDocRow"]=lineDict["row"]
                     foundAnyParam=True
 
                 if itterObj['foundParam']: self._writeParamBuf(itterObj)
@@ -161,6 +161,8 @@ class CommentsParser():
             except:
                 self.writeMatch(MatchTypes.BOGUS, [lineDict], itterObj['seq'])
                 continue
+
+            #print "Found param:" + str(res.group(4))
 
             itterObj['foundParam']=True
             itterObj['paramName']=str(res.group(4))

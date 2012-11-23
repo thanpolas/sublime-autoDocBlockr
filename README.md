@@ -19,6 +19,7 @@ This package depends on [docBlockr](https://github.com/spadgos/sublime-jsdocs), 
 ## Changelog
 - **v0.1.5**, *23 November 2012*
   - Fixed issue #7 and #9, when no docBlock exists and a new one is created, the cursor was not positioned properly.
+  - Fixed issue #8, updated the @param docBlock parser regex to match edge cases.
 
 - **v0.1.4**, *22 November 2012*
   - Fixed issue #2 and #3, autoDocBlockr now triggers only on function declarations and function statements in JS.
