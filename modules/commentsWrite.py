@@ -19,7 +19,6 @@ class CommentsWrite():
 
 
     def writeComments(self, newDocBlock):
-
         self.removeOldDocBlocks(self.gc.matches)
 
         self.insertNewDocBlocks(newDocBlock, self.gc.matches, self.gc.indent)

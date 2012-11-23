@@ -1,5 +1,5 @@
 """
-autoDocBlockr v0.1.4
+autoDocBlockr v0.1.5
 by Thanasis Polychronakis
 https://github.com/thanpolas/sublime-autoDocBlockr
 """
@@ -99,8 +99,7 @@ def last_selected_lineno(view):
     return view.rowcol(viewSel[0].end())[0]
 
 class BackgroundAutoDoc(sublime_plugin.EventListener):
-    '''TBD
-    '''
+    '''Listen for sublime triggered events'''
 
     triggered=False
 
@@ -138,6 +137,7 @@ class AutoDocBlockrVoid(sublime_plugin.TextCommand):
 
 def start_autoDocBlockr(view, trigger):
     """Start autoDocBlockr"""
+    logger.info('autoDocBlocr Triggered. Examining current line...')
     mem = Mem()
     mem.view=view
     mem.settings = view.settings()
@@ -154,14 +154,17 @@ def start_autoDocBlockr(view, trigger):
     if not modules.eventHandler.checkSyntax(view):
         return
 
+    logger.info('Syntax check passed.');
+
     mem.edit=view.begin_edit('autoDocBlockr')
 
     if not modules.initialize.init(mem, view):
         mem.view.end_edit(mem.edit)
         return
 
+    logger.info('Initialization finished. Running updateComments...')
     newDocBlock = mem.comUpdate.updateComments()
-
+    logger.info('running writeComments...')
     mem.comWrite.writeComments(newDocBlock)
 
     mem.view.end_edit(mem.edit)

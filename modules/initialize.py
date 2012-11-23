@@ -1,6 +1,5 @@
+import re
 import logging
-
-import sublime
 
 import modules.jsdocs as jsdocs
 import modules.commentsParser
@@ -82,13 +81,25 @@ def init(mem, view):
     return True
 
 def initDocs(mem):
-    (row,col) = mem.view.rowcol(mem.view.sel()[0].begin())
-
-    # Move the cursor one line up
-    target = mem.view.text_point(row - 1, 0)
-    mem.view.sel().clear()
-    mem.view.sel().add(sublime.Region(target))
-
-    mem.subHelp.writeString("/**")
+    # Add a new line at the current line where the func declaration was
+    mem.subHelp.positionCursor(mem.currentFnRow)
+    mem.subHelp.insertNewLine()
+    # Echo the string that triggers DocBlockr
+    mem.subHelp.writeString(mem.indent + "/**")
     # Create the docblock
     mem.view.run_command("jsdocs")
+
+    # Locate row where the func now is
+    find_result = mem.view.find(re.escape(mem.currentLine),
+        mem.subHelp.getCurrentSelStartPoint())
+    if find_result is None:
+        module_logger.error('Could not find function line to position cursor. fn line searched:' + mem.currentLine)
+        return
+
+    row = mem.subHelp.getRow(find_result.begin())
+
+    #module_logger.info('Func found at row:' + str(row))
+    # Return the cursor back where it was
+    mem.subHelp.positionCursor(row, mem.cursorCol)
+
+
