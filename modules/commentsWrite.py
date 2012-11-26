@@ -60,8 +60,8 @@ class CommentsWrite():
             return self.gc.matches[0]['row']
 
         docBlockCoords = self.gc.docBlockCoords
-        if docBlockCoords['fistDocRow']:
-            return docBlockCoords['fistDocRow']
+        if docBlockCoords['firstDocRow']:
+            return docBlockCoords['firstDocRow']
 
 
         # Check for same line cases (inline)
